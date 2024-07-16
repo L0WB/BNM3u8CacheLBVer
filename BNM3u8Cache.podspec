@@ -15,9 +15,9 @@ Pod::Spec.new do |s|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  s.name         = "BNM3u8Cache"
+  s.name         = "BNM3u8CacheLBVer"
   s.version      = "1.0.2"
-  s.summary      = "a m3u8 downloader"
+  s.summary      = "a modify ver of BNM3u8Cache"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   Implement m3u8 local caching and playback using operation. Can control the number of media concurrency, a single media file download concurrency; Support task suspend restore, support task cancel.
                    DESC
 
-  s.homepage     = "https://github.com/zmubai/BNM3u8Cache"
+  s.homepage     = "https://github.com/L0WB/BNM3u8Cache"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -53,10 +53,7 @@ Pod::Spec.new do |s|
   #  profile URL.
   #
 
-  s.author             = { "zmubai" => "634825162@qq.com" }
-  # Or just: s.author    = "zmubai"
-  # s.authors            = { "zmubai" => "634825162@qq.com" }
-  # s.social_media_url   = "http://twitter.com/zmubai"
+  s.author             = { "lq" => "devluqun@gmail.com" }
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -81,7 +78,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/zmubai/BNM3u8Cache.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/L0WB/BNM3u8Cache", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -135,6 +132,6 @@ Pod::Spec.new do |s|
 
   s.xcconfig = { "HEADER_SEARCH_PATHS" => ["${PODS_ROOT}/AFNetworking/AFNetworking","${PODS_ROOT}/GCDWebServer/GCDWebServer/Core","${SRCRoot}/Classes/m3u8/*"] }
   # s.dependency "JSONKit", "~> 1.4"
-   s.dependency "AFNetworking", "~> 3.0"
+   s.dependency "AFNetworking", "~> 4.0"
    s.dependency "GCDWebServer", "~> 3.5.3"
 end
