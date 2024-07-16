@@ -15,7 +15,7 @@
 首先在Podfild中添加以下内容并保存
 
 ```ruby
-pod 'BNM3u8CacheLBVer'
+pod 'BNM3u8CacheLBVer', :git => 'https://github.com/L0WB/BNM3u8CacheLBVer.git'
 ```
 
 然后命令行执行
