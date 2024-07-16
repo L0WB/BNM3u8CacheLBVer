@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   Implement m3u8 local caching and playback using operation. Can control the number of media concurrency, a single media file download concurrency; Support task suspend restore, support task cancel.
                    DESC
 
-  s.homepage     = "https://github.com/L0WB/BNM3u8Cache"
+  s.homepage     = "https://github.com/L0WB/BNM3u8CacheLBVer"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -78,7 +78,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/L0WB/BNM3u8Cache", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/L0WB/BNM3u8CacheLBVer", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
