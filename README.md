@@ -1,5 +1,12 @@
 
-# BNM3u8Cache
+# BNM3u8CacheLBVer
+
+本项目从BNM3u8Cache fork而来.
+修改:
+- 更新AFNetworking的版本到4.x
+- 修改ts解析的路径，原项目是把相对路径统一处理为绝对路径，此版本默认处理相对路径而特殊处理绝对路径.
+- 修改pod引用方式
+
 
 使用operation的方式实现m3u8本地缓存和播放。可控制媒体并发数，单个媒体文件下载并发数；支持任务挂起恢复、支持任务取消。
 
@@ -8,7 +15,7 @@
 首先在Podfild中添加以下内容并保存
 
 ```ruby
-pod 'BNM3u8Cache'
+pod 'BNM3u8CacheLBVer'
 ```
 
 然后命令行执行
