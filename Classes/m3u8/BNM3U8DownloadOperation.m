@@ -81,7 +81,7 @@
         
         if (![self tryCreateRootDir]) {
             NSError *error = [NSError errorWithDomain:@"创建文件目录失败" code:100 userInfo:nil];
-            self.resultBlock(error, nil);
+            self.resultBlock(error, nil, nil);
             [self done];
             return;
         }
@@ -120,7 +120,7 @@
                         return;
                     }
                     if (error) {
-                        self.resultBlock(error, nil);
+                        self.resultBlock(error, nil, nil);
                         [self done];
                         return;
                     }
@@ -237,7 +237,7 @@
         if (failed) {
             ///存在文件下载失败
             NSError *error = [NSError errorWithDomain:[NSString stringWithFormat:@"failed download count is %ld",failedCount] code:(NSInteger)100 userInfo:@{@"info":_plistInfo}];
-            if(_resultBlock) _resultBlock(error,nil);
+            if(_resultBlock) _resultBlock(error, nil, nil);
             [self done];
         }
         else{
@@ -245,10 +245,10 @@
             NSString *dstPath = [[_downloadDstRootPath stringByAppendingPathComponent:[_config.url md5]]stringByAppendingPathComponent:@"dst.m3u8"];
             [[BNFileManager shareInstance]saveDate:[m3u8String dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstPath completaionHandler:^(NSError *error) {
                 if (!error) {
-                    if(self.resultBlock) self.resultBlock(nil,[[self.config.localhost stringByAppendingString:[self.config.url md5]]stringByAppendingString:@"/dst.m3u8"]);
+                    if(self.resultBlock) self.resultBlock(nil, [[self.config.localhost stringByAppendingString:[self.config.url md5]] stringByAppendingString:@"/dst.m3u8"], dstPath);
                 }
                 else{
-                    if(self.resultBlock) self.resultBlock(error,nil);
+                    if(self.resultBlock) self.resultBlock(error, nil, nil);
                 }
                 [self done];
             }];

@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-typedef void(^BNM3U8DownloadOperationResultBlock)( NSError * _Nullable error, NSString * _Nullable relativeUrl);
+typedef void(^BNM3U8DownloadOperationResultBlock)( NSError * _Nullable error, NSString * _Nullable relativeUrl, NSString * _Nullable localFilePath);
 typedef void(^BNM3U8DownloadOperationProgressBlock)(CGFloat progress);
 /*
  继承 NSOperation 需实相关方法，包括状态控制

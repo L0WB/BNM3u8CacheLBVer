@@ -61,11 +61,11 @@
     }
     UNLOCK(_operationSemaphore);
     __weak __typeof(self) weakSelf= self;
-    BNM3U8DownloadOperation *operation =  [[BNM3U8DownloadOperation alloc]initWithConfig:config downloadDstRootPath:self.config.downloadDstRootPath sessionManager:self.sessionManager progressBlock:^(CGFloat progress) {
+    BNM3U8DownloadOperation *operation = [[BNM3U8DownloadOperation alloc] initWithConfig:config downloadDstRootPath:self.config.downloadDstRootPath sessionManager:self.sessionManager progressBlock:^(CGFloat progress) {
         if(progressBlock) progressBlock(progress);
-    }resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString) {
+    } resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString, NSString * _Nullable localFilePath) {
         ///下载回调
-        if(resultBlock) resultBlock(error,localPlayUrlString);
+        if(resultBlock) resultBlock(error, localPlayUrlString, localFilePath);
         LOCK(weakSelf.operationSemaphore);
         [weakSelf.downloadOperationsMap removeObjectForKey:config.url];
         UNLOCK(weakSelf.operationSemaphore);
