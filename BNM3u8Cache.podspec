@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "BNM3u8CacheLBVer"
-  s.version      = "1.0.2"
+  s.version      = "1.0.3"
   s.summary      = "a modify ver of BNM3u8Cache"
 
   # This description is used to generate tags and improve search results.
