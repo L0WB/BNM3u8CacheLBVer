@@ -3,7 +3,10 @@
 //  m3u8Demo
 //
 //  Created by liangzeng on 6/14/19.
+//  Modify by L0WB on 7/15/24
+//
 //  Copyright © 2019 liangzeng. All rights reserved.
+//  Copyright © 2024 L0WB. All rights reserved.
 //
 
 #import "BNM3U8AnalysisService.h"
@@ -82,18 +85,6 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
      "https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8"
      https://bitmovin-a.akamaihd.net/content/playhouse-vr/
      */
-    /*如果是相对路径 需要特殊处理*/
-    if([m3u8String containsString:@"../"])
-    {
-        NSRange r;
-        NSString *a = OriUrlString;
-        for (int i = 0; i < 2; i ++) {
-            r = [a rangeOfString:@"/" options:NSBackwardsSearch];
-            a = [a substringToIndex:r.location];
-        }
-        a = [a stringByAppendingString:@"/"];
-        m3u8String = [m3u8String stringByReplacingOccurrencesOfString:@"../" withString:a];
-    }
     BNM3U8PlistInfo *info = [BNM3U8PlistInfo new];
     info.version = [[m3u8String subStringFrom:@"#EXT-X-VERSION:" to:@"#"] removeSpaceAndNewline];
     info.targetduration = [[m3u8String subStringFrom:@"#EXT-X-TARGETDURATION:" to:@"#"] removeSpaceAndNewline];
@@ -127,7 +118,15 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             BNM3U8fileInfo *fileInfo = [BNM3U8fileInfo new];
             fileInfo.duration = [m3u8String subStringFrom:@"#EXTINF:" to:@","];
             m3u8String = [m3u8String subStringForm:@"," offset:1];
-            fileInfo.oriUrlString = [[m3u8String subStringTo:@"#"] removeSpaceAndNewline];
+            
+            // 把ts的路径处理为http/https开头的完整路径
+            NSString *partTsUrlString = [[m3u8String subStringTo:@"#"] removeSpaceAndNewline];
+            if ([self isNetworkURL:partTsUrlString]) {
+                fileInfo.oriUrlString = partTsUrlString;
+            } else {
+                fileInfo.oriUrlString = [[self removeLastPathComponentFromURL:[NSURL URLWithString:OriUrlString]] URLByAppendingPathComponent:partTsUrlString].absoluteString;
+            }
+            
             NSRange exRange = [m3u8String rangeOfString:@"#EX"];
             NSRange discontinuityRange = [m3u8String rangeOfString:@"#EXT-X-DISCONTINUITY"];
             if (exRange.location == discontinuityRange.location) {
@@ -189,6 +188,28 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     newM3u8String = [[[[newM3u8String stringByAppendingString:header] stringByAppendingString:keyStr] stringByAppendingString:body] stringByAppendingString:@"#EXT-X-ENDLIST"];
     
     return newM3u8String;
+}
+
+/// 新增方法，删除NSURL最后一部分path
++ (NSURL *)removeLastPathComponentFromURL:(NSURL *)url {
+    if (!url) {
+        return nil;
+    }
+    NSArray *pathComponents = [url pathComponents];
+    if (pathComponents.count > 1) {
+        NSURL *newURL = [url URLByDeletingLastPathComponent];
+        return newURL;
+    } else {
+        return url;
+    }
+}
+
+
++ (BOOL)isNetworkURL:(NSString *)urlString {
+    if ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) {
+        return YES;
+    }
+    return NO;
 }
 
 @end
