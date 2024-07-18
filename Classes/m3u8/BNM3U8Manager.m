@@ -50,8 +50,7 @@
 }
 
 #pragma mark -
-- (void)downloadVideoWithConfig:(BNM3U8DownloadConfig *)config progressBlock:(BNM3U8DownloadProgressBlock)progressBlock resultBlock:(BNM3U8DownloadResultBlock)resultBlock{
-    
+- (void)downloadVideoWithConfig:(BNM3U8DownloadConfig *)config homeDirCreated:(BNM3U8DownloadDirCreatedBlock)homeCreated progressBlock:(BNM3U8DownloadProgressBlock)progressBlock resultBlock:(BNM3U8DownloadResultBlock)resultBlock {
     NSParameterAssert(config.url);
     LOCK(_operationSemaphore);
     if([_downloadOperationsMap.allKeys containsObject:config.url]){
@@ -61,7 +60,9 @@
     }
     UNLOCK(_operationSemaphore);
     __weak __typeof(self) weakSelf= self;
-    BNM3U8DownloadOperation *operation = [[BNM3U8DownloadOperation alloc] initWithConfig:config downloadDstRootPath:self.config.downloadDstRootPath sessionManager:self.sessionManager progressBlock:^(CGFloat progress) {
+    BNM3U8DownloadOperation *operation = [[BNM3U8DownloadOperation alloc] initWithConfig:config homeDirCreated:^(NSString * _Nullable fileHomePath) {
+        if (homeCreated) homeCreated(fileHomePath);
+    } downloadDstRootPath:self.config.downloadDstRootPath sessionManager:self.sessionManager progressBlock:^(CGFloat progress) {
         if(progressBlock) progressBlock(progress);
     } resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString, NSString * _Nullable localFilePath) {
         ///下载回调

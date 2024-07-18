@@ -25,6 +25,7 @@
 @property (nonatomic, copy) NSString *downloadDstRootPath;
 @property (nonatomic, copy) BNM3U8DownloadOperationResultBlock resultBlock;
 @property (nonatomic, copy) BNM3U8DownloadOperationProgressBlock progressBlock;
+@property (nonatomic, copy) BNM3U8DownloadOperationHomeDirCreated homeCreatedBlock;
 @property (nonatomic, strong) NSMutableDictionary <NSString*,BNM3U8FileDownLoadOperation*> *downloadOperationsMap;
 @property (nonatomic, strong) BNM3U8PlistInfo *plistInfo;
 @property (nonatomic, strong) dispatch_semaphore_t operationSemaphore;
@@ -42,7 +43,7 @@
 @synthesize finished = _finished;
 @synthesize suspend = _suspend;
 
-- (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager progressBlock:(BNM3U8DownloadOperationProgressBlock)progressBlock resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock{
+- (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config homeDirCreated:(BNM3U8DownloadOperationHomeDirCreated)homeCreated downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager progressBlock:(BNM3U8DownloadOperationProgressBlock)progressBlock resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock {
     NSParameterAssert(config);
     NSParameterAssert(path);
     self = [super init];
@@ -51,6 +52,7 @@
         _downloadDstRootPath = path;
         _resultBlock = resultBlock;
         _progressBlock = progressBlock;
+        _homeCreatedBlock = homeCreated;
         _executing = NO;
         _finished = NO;
         _suspend = NO;
@@ -79,12 +81,14 @@
         
         __weak __typeof(self) weakSelf = self;
         
-        if (![self tryCreateRootDir]) {
+        NSString *homeDir = [self.downloadDstRootPath stringByAppendingPathComponent:[self.config.url md5]];
+        if (![self tryCreateRootDir:homeDir]) {
             NSError *error = [NSError errorWithDomain:@"创建文件目录失败" code:100 userInfo:nil];
             self.resultBlock(error, nil, nil);
             [self done];
             return;
         }
+        self.homeCreatedBlock(homeDir);
         
         void (^subOperationlock)(void) = ^(void) {
             [self.plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -256,9 +260,8 @@
     }
 }
 
-- (BOOL)tryCreateRootDir
-{
-    return  [BNFileManager tryGreateDir:[self.downloadDstRootPath stringByAppendingPathComponent:[self.config.url md5]]];
+- (BOOL)tryCreateRootDir:(NSString *)rootDir {
+    return [BNFileManager tryGreateDir:rootDir];
 }
 
 #pragma mark - setter / getter
