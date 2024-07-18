@@ -11,6 +11,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import "BNM3u8Cache.h"
 
+#define RootDownloadHome [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"m3u8files"]
+
 @interface ViewController ()
 @property (strong, nonatomic) AVPlayer *player;
 @property (strong, nonatomic) AVPlayerItem *playerItem;
@@ -80,7 +82,7 @@
 }
 
 - (void)configM3u8 {
-    NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
+    NSString *rootPath = RootDownloadHome;
     BNM3U8ManagerConfig *config = BNM3U8ManagerConfig.new;
     config.videoMaxConcurrenceCount = 5;
     config.downloadDstRootPath = rootPath;
@@ -129,14 +131,16 @@
         /*单个媒体下载的文件并发数控制*/
         dlConfig.maxConcurrenceCount = 5;
         dlConfig.localhost = @"http://127.0.0.1:8080/";
-        [BNM3U8Manager.shareInstance downloadVideoWithConfig:dlConfig progressBlock:^(CGFloat progress) {
+        [BNM3U8Manager.shareInstance downloadVideoWithConfig:dlConfig homeDirCreated:^(NSString * _Nullable fileHomePath) {
+            NSLog(@"fileHome is %@", fileHomePath);
+        } progressBlock:^(CGFloat progress) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 label.text = [NSString stringWithFormat:@"%.00f%%",progress * 100];
                 if (!label.superview) {
                     [self.progressView addSubview:label];
                 }
             });
-        }resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrl) {
+        } resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrl, NSString * _Nullable localFileUrl) {
             if(localPlayUrl)
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -157,7 +161,7 @@
 
 - (void)clearRootPath
 {
-    NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
+    NSString *rootPath = RootDownloadHome;
     [BNFileManager.shareInstance removeFileWithPath:rootPath];
     [self.players enumerateObjectsUsingBlock:^(AVPlayer  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [obj pause];
