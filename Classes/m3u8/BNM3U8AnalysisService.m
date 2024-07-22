@@ -179,7 +179,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             }
         }
         else{
-            NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue,[localhost stringByAppendingString:obj.relativeUrl]];
+            NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue, obj.relativeUrl];
             body =  [body stringByAppendingString:tsInfo];
             if (obj.isHasDiscontiunity) body = [body stringByAppendingString:@"#EXT-X-DISCONTINUITY\n"];
         }
