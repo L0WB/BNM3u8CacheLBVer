@@ -130,6 +130,24 @@
     UNLOCK(_operationSemaphore);
 }
 
+- (void)suspendOne:(NSString *)url {
+    LOCK(_operationSemaphore);
+    BNM3U8DownloadOperation *operation = [_downloadOperationsMap valueForKey:url];
+    UNLOCK(_operationSemaphore);
+    if(!operation)return;
+    NSParameterAssert(operation);
+    [operation suspend];
+}
+
+- (void)resumeOne:(NSString *)url {
+    LOCK(_operationSemaphore);
+    BNM3U8DownloadOperation *operation = [_downloadOperationsMap valueForKey:url];
+    UNLOCK(_operationSemaphore);
+    if(!operation)return;
+    NSParameterAssert(operation);
+    [operation resume];
+}
+
 - (AFURLSessionManager *)sessionManager
 {
     if (!_sessionManager) {

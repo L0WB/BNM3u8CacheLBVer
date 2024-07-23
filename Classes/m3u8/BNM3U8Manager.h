@@ -55,6 +55,10 @@ typedef void(^BNM3U8DownloadDirCreatedBlock)(NSString * _Nullable fileHomePath);
 - (void)suspend;
 
 - (void)resume;
+
+- (void)suspendOne:(NSString *)url;
+
+- (void)resumeOne:(NSString *)url;
 @end
 
 NS_ASSUME_NONNULL_END
