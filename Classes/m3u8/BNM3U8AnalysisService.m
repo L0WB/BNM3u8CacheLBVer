@@ -113,6 +113,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     }
     NSInteger index = 0;
     m3u8String = [m3u8String substringFromIndex:tsRange.location];
+    m3u8String = [m3u8String stringByReplacingOccurrencesOfString:@"#EXT-X-DISCONTINUITY\n" withString:@""];
     while (tsRange.location != NSNotFound) {
         @autoreleasepool {
             BNM3U8fileInfo *fileInfo = [BNM3U8fileInfo new];
