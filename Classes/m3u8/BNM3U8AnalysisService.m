@@ -113,7 +113,6 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     }
     NSInteger index = 0;
     m3u8String = [m3u8String substringFromIndex:tsRange.location];
-    m3u8String = [m3u8String stringByReplacingOccurrencesOfString:@"#EXT-X-DISCONTINUITY\n" withString:@""];
     while (tsRange.location != NSNotFound) {
         @autoreleasepool {
             BNM3U8fileInfo *fileInfo = [BNM3U8fileInfo new];
@@ -122,6 +121,20 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             
             // 把ts的路径处理为http/https开头的完整路径
             NSString *partTsUrlString = [[m3u8String subStringTo:@"#"] removeSpaceAndNewline];
+            
+            BOOL isPartTsUrlStringEmpty = NO;
+            if (partTsUrlString == nil || [partTsUrlString isEqualToString:@""]) {
+                isPartTsUrlStringEmpty = YES;
+            }
+            
+            NSString *prefix = [m3u8String substringWithRange:NSMakeRange(0, 21)];
+            prefix = [prefix stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            
+            if (isPartTsUrlStringEmpty && [prefix isEqualToString:@"#EXT-X-DISCONTINUITY"]) {
+                NSString *tempM3u8String = [m3u8String substringFromIndex:([@"#EXT-X-DISCONTINUITY" length] + 1)]; // 有换行符要+1
+                partTsUrlString = [[tempM3u8String subStringTo:@"#"] removeSpaceAndNewline];
+            }
+            
             if ([self isNetworkURL:partTsUrlString]) {
                 fileInfo.oriUrlString = partTsUrlString;
             } else {
@@ -161,6 +174,8 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     if (m3u8Info.version.length) {
         header = [header stringByAppendingString:[NSString stringWithFormat:@"#EXT-X-VERSION:%ld\n",(long)m3u8Info.version.integerValue]];
     }
+    //lq 添加 vod类型
+    header = [header stringByAppendingString:@"#EXT-X-PLAYLIST-TYPE:VOD"];
     if (m3u8Info.targetduration.length) {
         header = [header stringByAppendingString:[NSString stringWithFormat:@"#EXT-X-TARGETDURATION:%ld\n",(long)m3u8Info.targetduration.integerValue]];
     }
@@ -182,9 +197,13 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
         else{
             NSURL *tsUrl = [NSURL URLWithString:obj.relativeUrl];
             NSString *tsName =  [tsUrl pathComponents].lastObject;
-            NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue, tsName];
-            body =  [body stringByAppendingString:tsInfo];
-            if (obj.isHasDiscontiunity) body = [body stringByAppendingString:@"#EXT-X-DISCONTINUITY\n"];
+            NSString *tsInfo = @"";
+            if (obj.isHasDiscontiunity) {
+                tsInfo = [NSString stringWithFormat:@"#EXT-X-DISCONTINUITY\n#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue, tsName];
+            } else {
+                tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue, tsName];
+            }
+            body = [body stringByAppendingString:tsInfo];
         }
     }];
     
